@@ -8,15 +8,15 @@ const signToken = id =>{
 
 module.exports.createadmin = async (req, res, next)=> {
     try {
-        const { username, password } = req.body;
-        if (!username || !password) {
+        const { email, password } = req.body;
+        if (!email || !password) {
             return res.json({
                 error: true,
                 errorMessage: "Invalid credentials"
             })
         }      
-        const admin = { username, password  }
-        const adminExists = (await AdminModel.findOne({username , password})) != null;
+        const admin = { email, password  }
+        const adminExists = (await AdminModel.findOne({email , password})) != null;
         if (adminExists) {
             return res.json({
                 error: true,
@@ -24,7 +24,7 @@ module.exports.createadmin = async (req, res, next)=> {
             })
         }
         await AdminModel.create(admin);
-        const newAdmin = await AdminModel.findOne({username});
+        const newAdmin = await AdminModel.findOne({email});
         return res.status(201).json({
             admin: newAdmin,
         })
@@ -41,15 +41,15 @@ module.exports.createadmin = async (req, res, next)=> {
 
 module.exports.loginadmin = async (req, res,next)=>{
     try{
-        const { username, password } = req.body;
+        const { email, password } = req.body;
 
         // 1) Check if username and password exist
-        if (!username || !password) {
+        if (!email || !password) {
             return res.status(400).json({message:"Please provide email and password"})
         }
 
         // 2) Check if user exists && password is correct
-        const user = await AdminModel.findOne({username}) 
+        const user = await AdminModel.findOne({email}) 
         if(!user || !(await user.correctPassword(password,user.password))) {
             return res.status(401).json({message:"Incorrect email and password"})
         }
